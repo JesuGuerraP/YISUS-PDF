@@ -103,7 +103,6 @@ const SplitPDF = () => {
       const originalPdf = await PDFDocument.load(arrayBuffer);
 
       if (splitMode === "all") {
-        // Split into individual PDFs
         for (let i = 0; i < pageCount; i++) {
           const newPdf = await PDFDocument.create();
           const [page] = await newPdf.copyPages(originalPdf, [i]);
@@ -113,7 +112,6 @@ const SplitPDF = () => {
           saveAs(blob, `pagina_${i + 1}.pdf`);
         }
       } else {
-        // Extract selected pages into one PDF
         const newPdf = await PDFDocument.create();
         const pageIndices = pagesToExtract.map((p) => p - 1);
         const pages = await newPdf.copyPages(originalPdf, pageIndices);
@@ -153,7 +151,7 @@ const SplitPDF = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <Tabs defaultValue="select" onValueChange={(v) => setSplitMode(v as any)}>
+            <Tabs defaultValue="select" onValueChange={(v) => setSplitMode(v as typeof splitMode)}>
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="select">Seleccionar páginas</TabsTrigger>
                 <TabsTrigger value="range">Por rango</TabsTrigger>
