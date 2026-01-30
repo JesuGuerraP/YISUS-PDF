@@ -7,6 +7,7 @@ import ToolLayout from "@/components/ToolLayout";
 import FileUploader from "@/components/FileUploader";
 import ProcessingStatus from "@/components/ProcessingStatus";
 import PageThumbnail from "@/components/PageThumbnail";
+import PagePreviewModal from "@/components/PagePreviewModal";
 import { Button } from "@/components/ui/button";
 import { usePdfThumbnails } from "@/hooks/usePdfThumbnails";
 
@@ -17,6 +18,7 @@ const DeletePages = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [statusMessage, setStatusMessage] = useState("");
   const [pagesToDelete, setPagesToDelete] = useState<number[]>([]);
+  const [previewPage, setPreviewPage] = useState<number | null>(null);
 
   const { thumbnails, pageCount, isLoading: loadingThumbnails } = usePdfThumbnails(
     files.length > 0 ? files[0] : null
@@ -123,6 +125,7 @@ const DeletePages = () => {
                       pageNumber={thumb.pageNumber}
                       isSelected={pagesToDelete.includes(thumb.pageNumber)}
                       onSelect={() => togglePage(thumb.pageNumber)}
+                      onPreview={() => setPreviewPage(thumb.pageNumber)}
                       showCheckbox
                       imageData={thumb.imageData}
                     />
@@ -132,6 +135,15 @@ const DeletePages = () => {
             </div>
           </motion.div>
         )}
+
+        <PagePreviewModal
+          isOpen={previewPage !== null}
+          onClose={() => setPreviewPage(null)}
+          imageData={thumbnails.find((t) => t.pageNumber === previewPage)?.imageData || ""}
+          pageNumber={previewPage || 1}
+          totalPages={pageCount}
+          onNavigate={setPreviewPage}
+        />
 
         <ProcessingStatus status={status} message={statusMessage} />
 
