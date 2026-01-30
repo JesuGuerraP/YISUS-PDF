@@ -1,5 +1,6 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "yisus-pdf",
+  "description": "Aplicación web para gestionar y manipular documentos PDF con herramientas como fusionar, dividir, convertir y más.",
   "private": true,
   "version": "0.0.0",
   "type": "module",

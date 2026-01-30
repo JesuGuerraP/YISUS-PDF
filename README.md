@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# Yisus PDF
 
-## Project info
+## Descripción
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Yisus PDF es una aplicación web intuitiva y poderosa para gestionar y manipular documentos PDF. Diseñada para usuarios que necesitan herramientas esenciales de procesamiento de PDFs, ofrece una interfaz moderna y fácil de usar construida con React, Vite y Shadcn UI. Con Yisus PDF, puedes fusionar PDFs, dividir páginas, convertir a Word, reordenar páginas, desbloquear PDFs y mucho más, todo desde tu navegador.
 
-## How can I edit this code?
+## Características
 
-There are several ways of editing your application.
+- **Fusionar PDFs**: Combina múltiples archivos PDF en uno solo.
+- **Dividir PDFs**: Separa páginas específicas de un PDF en archivos individuales.
+- **Convertir PDF a Word**: Transforma documentos PDF a formato Word editable.
+- **Convertir Word a PDF**: Convierte archivos Word a PDF.
+- **Reordenar Páginas**: Cambia el orden de las páginas en un PDF.
+- **Desbloquear PDFs**: Remueve restricciones de edición en PDFs protegidos.
+- **Eliminar Páginas**: Borra páginas específicas de un PDF.
+- **Vista Previa de Páginas**: Visualiza miniaturas de las páginas antes de procesar.
+- **Interfaz Moderna**: Diseño responsivo con componentes de Shadcn UI y Tailwind CSS.
 
-**Use Lovable**
+## Tecnologías Utilizadas
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Frontend**: React, TypeScript, Vite
+- **UI/UX**: Shadcn UI, Tailwind CSS, Radix UI
+- **Herramientas de Desarrollo**: ESLint, Vitest, Playwright
+- **Gestión de Dependencias**: Bun, npm
 
-Changes made via Lovable will be committed automatically to this repo.
+## Instalación
 
-**Use your preferred IDE**
+### Prerrequisitos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (versión 18 o superior)
+- npm o Bun
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Pasos de Instalación
 
-Follow these steps:
+1. Clona el repositorio:
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd yisus-pdf
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. Instala las dependencias:
+   ```bash
+   npm install
+   # o si usas Bun
+   bun install
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   # o
+   bun run dev
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+4. Abre tu navegador en `http://localhost:8081` (o el puerto que indique la consola).
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Uso
 
-**Edit a file directly in GitHub**
+1. Sube tus archivos PDF o Word a través de la interfaz de carga.
+2. Selecciona la herramienta deseada (fusionar, dividir, convertir, etc.).
+3. Configura las opciones según sea necesario.
+4. Procesa el documento y descarga el resultado.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Scripts Disponibles
 
-**Use GitHub Codespaces**
+- `npm run dev`: Inicia el servidor de desarrollo.
+- `npm run build`: Construye la aplicación para producción.
+- `npm run preview`: Vista previa de la build de producción.
+- `npm run test`: Ejecuta las pruebas con Vitest.
+- `npm run lint`: Ejecuta ESLint para verificar el código.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Contribución
 
-## What technologies are used for this project?
+¡Las contribuciones son bienvenidas! Si deseas contribuir:
 
-This project is built with:
+1. Haz un fork del proyecto.
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`).
+3. Commit tus cambios (`git commit -am 'Agrega nueva funcionalidad'`).
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`).
+5. Abre un Pull Request.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Licencia
 
-## How can I deploy this project?
+Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Contacto
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Si tienes preguntas o sugerencias, puedes contactarnos a través de [correo electrónico] o abrir un issue en este repositorio.
