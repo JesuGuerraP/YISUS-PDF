@@ -27,7 +27,11 @@ export const usePdfThumbnails = (file: File | null, maxWidth: number = 150) => {
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      // NOTE: We intentionally disable the worker as a reliable fallback in Vite builds.
+      // For thumbnails, the performance impact is acceptable and avoids worker/CORS issues.
+      const pdf = await pdfjsLib
+        .getDocument({ data: arrayBuffer, disableWorker: true } as any)
+        .promise;
       const count = pdf.numPages;
       setPageCount(count);
 
