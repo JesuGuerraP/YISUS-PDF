@@ -7,6 +7,7 @@ import ToolLayout from "@/components/ToolLayout";
 import FileUploader from "@/components/FileUploader";
 import ProcessingStatus from "@/components/ProcessingStatus";
 import PageThumbnail from "@/components/PageThumbnail";
+import PagePreviewModal from "@/components/PagePreviewModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ const SplitPDF = () => {
   const [selectedPages, setSelectedPages] = useState<number[]>([]);
   const [rangeInput, setRangeInput] = useState("");
   const [splitMode, setSplitMode] = useState<"select" | "range" | "all">("select");
+  const [previewPage, setPreviewPage] = useState<number | null>(null);
 
   const { thumbnails, pageCount, isLoading: loadingThumbnails } = usePdfThumbnails(
     files.length > 0 ? files[0] : null
@@ -161,6 +163,7 @@ const SplitPDF = () => {
                         pageNumber={thumb.pageNumber}
                         isSelected={selectedPages.includes(thumb.pageNumber)}
                         onSelect={() => togglePage(thumb.pageNumber)}
+                        onPreview={() => setPreviewPage(thumb.pageNumber)}
                         showCheckbox
                         imageData={thumb.imageData}
                       />
@@ -199,6 +202,15 @@ const SplitPDF = () => {
             </Tabs>
           </motion.div>
         )}
+
+        <PagePreviewModal
+          isOpen={previewPage !== null}
+          onClose={() => setPreviewPage(null)}
+          imageData={thumbnails.find((t) => t.pageNumber === previewPage)?.imageData || ""}
+          pageNumber={previewPage || 1}
+          totalPages={pageCount}
+          onNavigate={setPreviewPage}
+        />
 
         <ProcessingStatus status={status} message={statusMessage} />
 

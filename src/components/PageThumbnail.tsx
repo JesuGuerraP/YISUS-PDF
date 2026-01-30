@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { GripVertical, Trash2, Check } from "lucide-react";
+import { GripVertical, Trash2, Check, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PageThumbnailProps {
@@ -8,8 +8,10 @@ interface PageThumbnailProps {
   isDraggable?: boolean;
   onSelect?: () => void;
   onDelete?: () => void;
+  onPreview?: () => void;
   showDeleteButton?: boolean;
   showCheckbox?: boolean;
+  showPreviewButton?: boolean;
   imageData?: string;
 }
 
@@ -19,8 +21,10 @@ const PageThumbnail = ({
   isDraggable = false,
   onSelect,
   onDelete,
+  onPreview,
   showDeleteButton = false,
   showCheckbox = false,
+  showPreviewButton = true,
   imageData,
 }: PageThumbnailProps) => {
   return (
@@ -56,13 +60,28 @@ const PageThumbnail = ({
       )}
 
       {/* Page Preview */}
-      <div className="aspect-[3/4] bg-muted flex items-center justify-center relative overflow-hidden">
+      <div className="aspect-[3/4] bg-muted flex items-center justify-center relative overflow-hidden group/preview">
         {imageData ? (
-          <img
-            src={imageData}
-            alt={`Página ${pageNumber}`}
-            className="w-full h-full object-contain"
-          />
+          <>
+            <img
+              src={imageData}
+              alt={`Página ${pageNumber}`}
+              className="w-full h-full object-contain"
+            />
+            {showPreviewButton && onPreview && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute inset-0 m-auto w-10 h-10 opacity-0 group-hover/preview:opacity-100 transition-opacity bg-background/80 hover:bg-background"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPreview();
+                }}
+              >
+                <Expand className="w-5 h-5" />
+              </Button>
+            )}
+          </>
         ) : (
           <div className="text-center p-4">
             <div className="w-12 h-12 mx-auto mb-2 bg-primary/10 rounded-lg flex items-center justify-center">
