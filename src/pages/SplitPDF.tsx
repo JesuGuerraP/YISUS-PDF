@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { saveAs } from "file-saver";
 import { motion, AnimatePresence } from "framer-motion";
-import { Scissors, Download } from "lucide-react";
+import { Scissors, Download, Loader2 } from "lucide-react";
 import ToolLayout from "@/components/ToolLayout";
 import FileUploader from "@/components/FileUploader";
 import ProcessingStatus from "@/components/ProcessingStatus";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePdfThumbnails } from "@/hooks/usePdfThumbnails";
 
 type Status = "idle" | "processing" | "success" | "error";
 
@@ -18,33 +19,16 @@ const SplitPDF = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [statusMessage, setStatusMessage] = useState("");
-  const [pageCount, setPageCount] = useState(0);
   const [selectedPages, setSelectedPages] = useState<number[]>([]);
   const [rangeInput, setRangeInput] = useState("");
   const [splitMode, setSplitMode] = useState<"select" | "range" | "all">("select");
 
+  const { thumbnails, pageCount, isLoading: loadingThumbnails } = usePdfThumbnails(
+    files.length > 0 ? files[0] : null
+  );
+
   useEffect(() => {
-    const loadPdfInfo = async () => {
-      if (files.length === 0) {
-        setPageCount(0);
-        setSelectedPages([]);
-        return;
-      }
-
-      try {
-        const arrayBuffer = await files[0].arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
-        const count = pdf.getPageCount();
-        setPageCount(count);
-        setSelectedPages([]);
-      } catch (error) {
-        console.error("Error loading PDF:", error);
-        setStatus("error");
-        setStatusMessage("Error al cargar el PDF.");
-      }
-    };
-
-    loadPdfInfo();
+    setSelectedPages([]);
   }, [files]);
 
   const togglePage = (page: number) => {
@@ -145,7 +129,14 @@ const SplitPDF = () => {
           description="o haz clic para seleccionar"
         />
 
-        {pageCount > 0 && (
+        {loadingThumbnails && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Cargando miniaturas...</span>
+          </div>
+        )}
+
+        {!loadingThumbnails && pageCount > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -164,13 +155,14 @@ const SplitPDF = () => {
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                   <AnimatePresence>
-                    {Array.from({ length: pageCount }, (_, i) => (
+                    {thumbnails.map((thumb) => (
                       <PageThumbnail
-                        key={i + 1}
-                        pageNumber={i + 1}
-                        isSelected={selectedPages.includes(i + 1)}
-                        onSelect={() => togglePage(i + 1)}
+                        key={thumb.pageNumber}
+                        pageNumber={thumb.pageNumber}
+                        isSelected={selectedPages.includes(thumb.pageNumber)}
+                        onSelect={() => togglePage(thumb.pageNumber)}
                         showCheckbox
+                        imageData={thumb.imageData}
                       />
                     ))}
                   </AnimatePresence>

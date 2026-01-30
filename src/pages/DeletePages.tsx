@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { saveAs } from "file-saver";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Download } from "lucide-react";
+import { Trash2, Download, Loader2 } from "lucide-react";
 import ToolLayout from "@/components/ToolLayout";
 import FileUploader from "@/components/FileUploader";
 import ProcessingStatus from "@/components/ProcessingStatus";
 import PageThumbnail from "@/components/PageThumbnail";
 import { Button } from "@/components/ui/button";
+import { usePdfThumbnails } from "@/hooks/usePdfThumbnails";
 
 type Status = "idle" | "processing" | "success" | "error";
 
@@ -15,31 +16,14 @@ const DeletePages = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [statusMessage, setStatusMessage] = useState("");
-  const [pageCount, setPageCount] = useState(0);
   const [pagesToDelete, setPagesToDelete] = useState<number[]>([]);
 
+  const { thumbnails, pageCount, isLoading: loadingThumbnails } = usePdfThumbnails(
+    files.length > 0 ? files[0] : null
+  );
+
   useEffect(() => {
-    const loadPdfInfo = async () => {
-      if (files.length === 0) {
-        setPageCount(0);
-        setPagesToDelete([]);
-        return;
-      }
-
-      try {
-        const arrayBuffer = await files[0].arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
-        const count = pdf.getPageCount();
-        setPageCount(count);
-        setPagesToDelete([]);
-      } catch (error) {
-        console.error("Error loading PDF:", error);
-        setStatus("error");
-        setStatusMessage("Error al cargar el PDF.");
-      }
-    };
-
-    loadPdfInfo();
+    setPagesToDelete([]);
   }, [files]);
 
   const togglePage = (page: number) => {
@@ -100,7 +84,14 @@ const DeletePages = () => {
           description="o haz clic para seleccionar"
         />
 
-        {pageCount > 0 && (
+        {loadingThumbnails && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Cargando miniaturas...</span>
+          </div>
+        )}
+
+        {!loadingThumbnails && pageCount > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -123,16 +114,17 @@ const DeletePages = () => {
 
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
               <AnimatePresence>
-                {Array.from({ length: pageCount }, (_, i) => (
+                {thumbnails.map((thumb) => (
                   <motion.div
-                    key={i + 1}
-                    className={pagesToDelete.includes(i + 1) ? "opacity-50" : ""}
+                    key={thumb.pageNumber}
+                    className={pagesToDelete.includes(thumb.pageNumber) ? "opacity-50" : ""}
                   >
                     <PageThumbnail
-                      pageNumber={i + 1}
-                      isSelected={pagesToDelete.includes(i + 1)}
-                      onSelect={() => togglePage(i + 1)}
+                      pageNumber={thumb.pageNumber}
+                      isSelected={pagesToDelete.includes(thumb.pageNumber)}
+                      onSelect={() => togglePage(thumb.pageNumber)}
                       showCheckbox
+                      imageData={thumb.imageData}
                     />
                   </motion.div>
                 ))}
