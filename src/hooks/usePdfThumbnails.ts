@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Use CDN for the worker to avoid Vite bundling issues
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+// Use CDN for the worker to avoid Vite bundling issues (v3.11.174)
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 interface ThumbnailData {
   pageNumber: number;
