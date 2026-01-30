@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { saveAs } from "file-saver";
 import { motion, Reorder } from "framer-motion";
-import { ArrowUpDown, Download, GripVertical } from "lucide-react";
+import { ArrowUpDown, Download, GripVertical, Loader2 } from "lucide-react";
 import ToolLayout from "@/components/ToolLayout";
 import FileUploader from "@/components/FileUploader";
 import ProcessingStatus from "@/components/ProcessingStatus";
 import { Button } from "@/components/ui/button";
+import { usePdfThumbnails } from "@/hooks/usePdfThumbnails";
 
 type Status = "idle" | "processing" | "success" | "error";
 
@@ -14,6 +15,7 @@ interface PageItem {
   id: string;
   originalIndex: number;
   pageNumber: number;
+  imageData?: string;
 }
 
 const ReorderPages = () => {
@@ -22,34 +24,24 @@ const ReorderPages = () => {
   const [statusMessage, setStatusMessage] = useState("");
   const [pages, setPages] = useState<PageItem[]>([]);
 
+  const { thumbnails, isLoading: loadingThumbnails } = usePdfThumbnails(
+    files.length > 0 ? files[0] : null
+  );
+
   useEffect(() => {
-    const loadPdfInfo = async () => {
-      if (files.length === 0) {
-        setPages([]);
-        return;
-      }
-
-      try {
-        const arrayBuffer = await files[0].arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
-        const count = pdf.getPageCount();
-        
-        setPages(
-          Array.from({ length: count }, (_, i) => ({
-            id: `page-${i}`,
-            originalIndex: i,
-            pageNumber: i + 1,
-          }))
-        );
-      } catch (error) {
-        console.error("Error loading PDF:", error);
-        setStatus("error");
-        setStatusMessage("Error al cargar el PDF.");
-      }
-    };
-
-    loadPdfInfo();
-  }, [files]);
+    if (thumbnails.length > 0) {
+      setPages(
+        thumbnails.map((thumb, i) => ({
+          id: `page-${i}`,
+          originalIndex: i,
+          pageNumber: thumb.pageNumber,
+          imageData: thumb.imageData,
+        }))
+      );
+    } else if (files.length === 0) {
+      setPages([]);
+    }
+  }, [thumbnails, files]);
 
   const handleReorder = async () => {
     if (files.length === 0 || pages.length === 0) return;
@@ -95,7 +87,14 @@ const ReorderPages = () => {
           description="o haz clic para seleccionar"
         />
 
-        {pages.length > 0 && (
+        {loadingThumbnails && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Cargando miniaturas...</span>
+          </div>
+        )}
+
+        {!loadingThumbnails && pages.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -119,13 +118,28 @@ const ReorderPages = () => {
                   className="bg-card p-4 rounded-xl border border-border shadow-soft cursor-grab active:cursor-grabbing"
                 >
                   <div className="flex items-center gap-4">
-                    <GripVertical className="w-5 h-5 text-muted-foreground" />
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <GripVertical className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                    {page.imageData ? (
+                      <div className="w-12 h-16 rounded-lg overflow-hidden border border-border flex-shrink-0">
+                        <img 
+                          src={page.imageData} 
+                          alt={`Página ${page.pageNumber}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-lg font-bold text-primary">
+                          {page.pageNumber}
+                        </span>
+                      </div>
+                    )}
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                       <span className="text-lg font-bold text-primary">
                         {index + 1}
                       </span>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <span className="font-medium text-foreground">
                         Página {page.pageNumber}
                       </span>
@@ -135,7 +149,7 @@ const ReorderPages = () => {
                         </span>
                       )}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground flex-shrink-0">
                       Posición original: {page.pageNumber}
                     </div>
                   </div>
